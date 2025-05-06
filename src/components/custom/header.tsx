@@ -22,7 +22,7 @@ export function Header() {
                 </nav>
                 <div className="flex items-center gap-2">
                     <Button variant="ghost" size="sm" asChild>
-                        <Link href="https://github.com/reo-scicda" target="_blank" rel="noopener noreferrer">
+                        <Link href="https://github.com/Annance-Quaarm/ReO-SciCDA" target="_blank" rel="noopener noreferrer">
                             GitHub
                         </Link>
                     </Button>
