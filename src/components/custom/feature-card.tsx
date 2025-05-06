@@ -1,6 +1,6 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../ui/card";
+import { Card, CardHeader, CardTitle, CardDescription } from "../ui/card";
 
 interface FeatureCardProps {
     title: string;

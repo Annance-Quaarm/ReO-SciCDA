@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Header } from "@/components/custom/header";
 import { Footer } from "@/components/custom/footer";
 import { Button } from "@/components/ui/button";
