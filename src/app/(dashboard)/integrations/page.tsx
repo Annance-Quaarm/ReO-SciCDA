@@ -1,10 +1,15 @@
 import { Metadata } from "next"
+import Link from "next/link"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Github, Gitlab, Code2, Database, FileText, Beaker, TestTube, BookOpen, Terminal, LucideIcon } from "lucide-react"
-import Image from "next/image"
+import { LucideIcon } from "lucide-react"
 import { ReactNode } from "react"
+import { cn } from "@/lib/utils"
+import { createClient } from "@/lib/supabase/server"
+import { ToolWithIntegration } from "@/types/database"
+import { ToolIcon } from "./_components/tool-icon"
+import { getUser } from "@/actions/user"
 
 export const metadata: Metadata = {
     title: "Integrations",
@@ -13,15 +18,6 @@ export const metadata: Metadata = {
 
 type IntegrationIcon = LucideIcon | (() => ReactNode)
 
-interface Integration {
-    id: string
-    name: string
-    description: string
-    category: string
-    icon: IntegrationIcon
-    status: "available" | "coming_soon"
-    features: string[]
-}
 
 function renderIcon(icon: IntegrationIcon) {
     if (typeof icon === 'function') {
@@ -31,138 +27,58 @@ function renderIcon(icon: IntegrationIcon) {
     return <IconComponent className="h-6 w-6" />
 }
 
-// Mock data for integrations
-const integrations: Integration[] = [
-    {
-        id: "ipfs",
-        name: "IPFS",
-        description: "Distributed file system for storing and accessing files, websites, applications, and data",
-        category: "Blockchain",
-        icon: () => (
-            <Image
-                src="/assets/ipfs.svg"
-                alt="IPFS Logo"
-                width={24}
-                height={24}
-                className="h-6 w-6"
-            />
-        ),
-        status: "available",
-        features: ["Content Addressing", "Decentralized Storage", "Data Persistence"],
-    },
-    {
-        id: "jupyter",
-        name: "Jupyter Notebooks",
-        description: "Interactive computing environment for data analysis and visualization",
-        category: "Data Analysis",
-        icon: BookOpen,
-        status: "available",
-        features: ["Notebook Integration", "Data Visualization", "Code Execution"],
-    },
-    {
-        id: "github",
-        name: "GitHub",
-        description: "Version control and collaboration platform for code and documentation",
-        category: "Code Management",
-        icon: Github,
-        status: "available",
-        features: ["Repository Sync", "Issue Tracking", "Pull Requests"],
-    },
-    {
-        id: "gitlab",
-        name: "GitLab",
-        description: "DevOps platform with integrated version control and CI/CD",
-        category: "Code Management",
-        icon: Gitlab,
-        status: "available",
-        features: ["Repository Sync", "CI/CD Pipelines", "Issue Tracking"],
-    },
-    {
-        id: "python",
-        name: "Python Environment",
-        description: "Python package management and environment configuration",
-        category: "Development",
-        icon: Terminal,
-        status: "available",
-        features: ["Package Management", "Environment Sync", "Dependency Tracking"],
-    },
-    {
-        id: "r",
-        name: "R Environment",
-        description: "Statistical computing and graphics environment",
-        category: "Data Analysis",
-        icon: Code2,
-        status: "available",
-        features: ["Package Management", "Data Analysis", "Visualization"],
-    },
-    {
-        id: "solana",
-        name: "Solana",
-        description: "High-performance blockchain platform for decentralized applications and marketplaces",
-        category: "Blockchain",
-        icon: () => (
-            <Image
-                src="/assets/solana.svg"
-                alt="Solana Logo"
-                width={24}
-                height={24}
-                className="h-6 w-6"
-            />
-        ),
-        status: "coming_soon",
-        features: ["Smart Contracts", "NFT Support", "Token Management"],
-    },
-    {
-        id: "dataverse",
-        name: "Dataverse",
-        description: "Data repository for sharing and preserving research data",
-        category: "Data Management",
-        icon: Database,
-        status: "coming_soon",
-        features: ["Data Publishing", "Version Control", "Metadata Management"],
-    },
-    {
-        id: "overleaf",
-        name: "Overleaf",
-        description: "Collaborative LaTeX editor for scientific documentation",
-        category: "Documentation",
-        icon: FileText,
-        status: "coming_soon",
-        features: ["LaTeX Editing", "Collaboration", "Templates"],
-    },
-    {
-        id: "zenodo",
-        name: "Zenodo",
-        description: "Open repository for research outputs and datasets",
-        category: "Data Management",
-        icon: Database,
-        status: "coming_soon",
-        features: ["Data Publishing", "DOI Assignment", "Version Control"],
-    },
-    {
-        id: "protocols.io",
-        name: "Protocols.io",
-        description: "Platform for sharing and discovering research protocols",
-        category: "Protocols",
-        icon: Beaker,
-        status: "coming_soon",
-        features: ["Protocol Sharing", "Version Control", "Collaboration"],
-    },
-]
 
-export default function IntegrationsPage() {
+
+const toolIconTypes: Record<string, string> = {
+    ipfs: 'image',
+    jupyter: 'lucide',
+    github: 'lucide',
+    gitlab: 'lucide',
+    python: 'lucide',
+    r: 'lucide',
+    solana: 'image',
+    dataverse: 'lucide',
+    zenodo: 'lucide',
+    overleaf: 'lucide',
+    'protocols.io': 'lucide'
+}
+
+export default async function IntegrationsPage() {
+
+    const user = await getUser()
+    const supabase = await createClient()
+
+    const { data } = await supabase
+        .from('user_tool_integrations')
+        .select('*')
+        .order('status');
+
+
+
+    const toolsWithIcons = (data as ToolWithIntegration[])?.map((tool) => ({
+        ...tool,
+        iconType: toolIconTypes[tool.id] || null,
+        iconName: tool.id,
+        isIntegrated: tool.user_id === user?.id,
+
+    }))
+    console.log("🚀 ~ toolsWithIcons ~ toolsWithIcons:", toolsWithIcons)
+
     return (
         <div className="flex-1 space-y-4 p-8 pt-6">
             <div className="flex items-center justify-between space-y-2">
                 <h2 className="text-3xl font-bold tracking-tight">Integrations</h2>
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {integrations.map((integration) => (
+                {toolsWithIcons.map((integration) => (
                     <Card key={integration.id} className="flex flex-col">
                         <CardHeader>
-                            <div className="flex items-center gap-2">
-                                {renderIcon(integration.icon)}
-                                <CardTitle>{integration.name}</CardTitle>
+                            <div className="flex justify-between items-center">
+                                <div className="flex items-center gap-2">
+                                    <ToolIcon type={integration.iconType || ""} name={integration.iconName} />
+                                    <CardTitle>{integration.name}</CardTitle>
+                                </div>
+                                {integration.isIntegrated && <Badge className="bg-green-600/30 text-green-600 px-2 rounded-3xl">connected</Badge>}
                             </div>
                             <CardDescription>{integration.description}</CardDescription>
                         </CardHeader>
@@ -180,7 +96,9 @@ export default function IntegrationsPage() {
                         </CardContent>
                         <CardFooter>
                             {integration.status === "available" ? (
-                                <Button className="w-full">Connect</Button>
+                                <Link href={`/integrations/${integration.id}`} className={cn(buttonVariants({ variant: "default", className: "w-full" }))}>
+                                    {integration.isIntegrated ? "Manage" : "Connect"}
+                                </Link>
                             ) : (
                                 <Button className="w-full" variant="outline" disabled>
                                     Coming Soon

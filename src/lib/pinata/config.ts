@@ -2,7 +2,9 @@
 
 import { PinataSDK } from "pinata"
 
-export const pinata = new PinataSDK({
-    pinataJwt: `${process.env.NEXT_PUBLIC_PINATA_JWT_TOKEN}`,
-    pinataGateway: `${process.env.NEXT_PUBLIC_PINATA_GATEWAY_URL}`
-})
+export const createPinataClient = (jwtToken: string, gatewayUrl: string) => {
+    return new PinataSDK({
+        pinataJwt: jwtToken,
+        pinataGateway: gatewayUrl
+    })
+}

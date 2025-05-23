@@ -4,24 +4,26 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 import { createClient } from '@/lib/supabase/server'
+import { AuthError } from '@supabase/supabase-js'
 
 export async function login(formData: FormData) {
     const supabase = await createClient()
 
-    // type-casting here for convenience
-    // in practice, you should validate your inputs
     const data = {
         email: formData.get('email') as string,
         password: formData.get('password') as string,
     }
 
-    const { error } = await supabase.auth.signInWithPassword(data)
+    try {
+        await supabase.auth.signInWithPassword(data)
 
-    if (error) {
-        console.log("🚀 ~ login ~ error:", error)
-        throw new Error(error.message)
+
+    } catch (error) {
+        if (error instanceof AuthError) {
+            throw new Error(error.message)
+        }
+        throw new Error('An unexpected error occurred')
     }
-
     revalidatePath('/dashboard', 'layout')
     redirect('/dashboard')
 }
@@ -29,18 +31,18 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
     const supabase = await createClient()
 
-    // type-casting here for convenience
-    // in practice, you should validate your inputs
     const data = {
         email: formData.get('email') as string,
         password: formData.get('password') as string,
     }
 
-    const { error } = await supabase.auth.signUp(data)
-
-    if (error) {
-        console.log("🚀 ~ signup ~ error:", error)
-        throw new Error(error.message)
+    try {
+        await supabase.auth.signUp(data)
+    } catch (error) {
+        if (error instanceof AuthError) {
+            throw new Error(error.message)
+        }
+        throw new Error('An unexpected error occurred')
     }
 
     revalidatePath('/dashboard', 'layout')

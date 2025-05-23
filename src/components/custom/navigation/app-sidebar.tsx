@@ -100,52 +100,6 @@ export const researcherNavigationSections: NavigationSection[] = [
   },
 ];
 
-// const navigationSections: NavigationSection[] = [
-//   {
-//     title: 'Content Management',
-//     items: [
-//       { title: 'Dashboard', url: '/', icon: Home },
-//       { title: 'Actor', url: '/actors', icon: Users },
-//       {
-//         title: 'Content',
-//         url: '', // Empty URL since this is just a dropdown container
-//         icon: PlayCircle,
-//         children: [
-//           { title: 'Movies', url: '/movies', icon: Film },
-//           { title: 'Series', url: '/series', icon: Film },
-//         ],
-//       },
-//       { title: 'Genre', url: '/genre', icon: Film },
-//       { title: 'Pages', url: '/pages', icon: FileText },
-//       { title: 'Rows', url: '/rows', icon: LayoutGrid },
-//       { title: 'Seasons', url: '/seasons', icon: Tv },
-//       { title: 'Episodes', url: '/season-episodes', icon: ListVideo },
-//     ],
-//   },
-//   {
-//     title: 'Media Library',
-//     items: [
-//       { title: 'Videos', url: '/videos', icon: VideoIcon },
-//       { title: 'Images', url: '/images', icon: Image },
-//       { title: 'Files', url: '/files', icon: FolderIcon },
-//     ],
-//   },
-//   {
-//     title: 'Analytics',
-//     items: [
-//       { title: 'Overview', url: '/analytics', icon: BarChart3 },
-//       { title: 'User Stats', url: '/analytics/users', icon: Users },
-//       { title: 'Content Stats', url: '/analytics/content', icon: FileText },
-//     ],
-//   },
-//   {
-//     title: 'Administration',
-//     items: [
-//       { title: 'Settings', url: '/settings', icon: Settings },
-//       { title: 'User Management', url: '/users', icon: Users },
-//     ],
-//   },
-// ];
 
 const NavigationItem: React.FC<NavigationItemProps> = ({
   title,
