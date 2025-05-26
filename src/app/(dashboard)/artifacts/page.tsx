@@ -3,52 +3,32 @@ import { Button } from "@/components/ui/button"
 import { PlusIcon } from "lucide-react"
 import { ArtifactCard } from "@/components/artifacts/artifact-card"
 import { Artifact } from "@/types/database"
+import { createClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation"
+import { getUser } from "@/actions/user"
 
 export const metadata: Metadata = {
     title: "Artifacts",
     description: "Manage your research artifacts",
 }
 
-// Mock data for demonstration
-const mockArtifacts: Artifact[] = [
-    {
-        id: "1",
-        project_id: "1",
-        type: "dataset",
-        title: "Climate Change Survey Data 2024",
-        description: "Raw survey data collected from 1000 participants across 5 regions",
-        ipfs_hash: "QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
-        version: 1,
-        current: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-    },
-    {
-        id: "2",
-        project_id: "1",
-        type: "notebook",
-        title: "Data Analysis Jupyter Notebook",
-        description: "Python notebook containing data processing and visualization code",
-        ipfs_hash: "QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG",
-        version: 2,
-        current: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-    },
-    {
-        id: "3",
-        project_id: "1",
-        type: "protocol",
-        title: "Experimental Protocol v1.2",
-        description: "Detailed protocol for conducting the climate change experiments",
-        version: 3,
-        current: true,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-    },
-]
+export default async function ArtifactsPage() {
 
-export default function ArtifactsPage() {
+    const supabase = await createClient()
+    // Get the current user
+    const user = await getUser()
+
+
+    // Fetch artifacts for the current user's projects
+    const { data: artifacts, error } = await supabase
+        .from('artifacts')
+        .select('*')
+        .order('updated_at', { ascending: false })
+
+    if (error) {
+        throw new Error('Failed to fetch artifacts')
+    }
+
     return (
         <div className="flex-1 space-y-4 p-8 pt-6">
             <div className="flex items-center justify-between space-y-2">
@@ -59,7 +39,7 @@ export default function ArtifactsPage() {
                 </Button>
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {mockArtifacts.map((artifact) => (
+                {artifacts.map((artifact) => (
                     <ArtifactCard key={artifact.id} artifact={artifact} />
                 ))}
             </div>

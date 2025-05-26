@@ -1,6 +1,8 @@
 import { Metadata } from "next"
 import { Project } from "@/types/database"
 import { IntegrationButtons } from "../_components/integration-buttons"
+import { getUser } from "@/actions/user"
+import { createClient } from "@/lib/supabase/server"
 
 export const metadata: Metadata = {
     title: "Project Details",
@@ -18,12 +20,19 @@ const getProject = (id: string): Project => ({
     updated_at: new Date().toISOString(),
 })
 
-export default function ProjectDetailsPage({
+export default async function ProjectDetailsPage({
     params,
 }: {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }) {
-    const project = getProject(params.id)
+    const { id } = await params
+    const user = getUser()
+    const supabase = await createClient()
+
+    const { data } = await supabase.from("projects").select("*").eq("id", id)
+
+    const project = ((data?.length ?? 0 > 0) ? data?.[0] : {}) as Project
+
 
     return (
         <div className="flex-1 space-y-4 p-8 pt-6">
@@ -44,10 +53,10 @@ export default function ProjectDetailsPage({
                     </div>
                 </div>
 
-                <div className="mt-8">
+                {/* <div className="mt-8">
                     <h3 className="text-xl font-semibold mb-4">Integrations</h3>
                     <IntegrationButtons projectId={project.id} />
-                </div>
+                </div> */}
             </div>
         </div>
     )

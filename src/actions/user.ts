@@ -19,7 +19,6 @@ export const getUser = async () => {
                 .eq('id', session.user.id)
                 .single()
 
-            console.log("🚀 ~ getUser ~ userData:", userData)
             if (userError) throw userError
             return userData as User
         }

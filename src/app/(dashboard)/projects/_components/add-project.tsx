@@ -2,13 +2,15 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Project, ProjectVisibility } from '@/types/database'
+import { ProjectVisibility } from '@/types/database'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PlusIcon } from 'lucide-react'
+import { createProject } from '../action'
+import { toast } from 'sonner'
 
 export function NewProjectModal() {
     const router = useRouter()
@@ -20,26 +22,20 @@ export function NewProjectModal() {
         setLoading(true)
 
         const formData = new FormData(event.currentTarget)
-        const project: Partial<Project> = {
+        const projectData = {
             title: formData.get('title') as string,
             description: formData.get('description') as string,
             visibility: formData.get('visibility') as ProjectVisibility,
         }
 
         try {
-            const response = await fetch('/api/projects', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(project),
-            })
-
-            if (!response.ok) throw new Error('Failed to create project')
-
-            const newProject = await response.json()
+            const newProject = await createProject(projectData)
             setOpen(false)
+            toast.success('Project created successfully')
             router.push(`/dashboard/projects/${newProject.id}`)
         } catch (error) {
             console.error('Error creating project:', error)
+            toast.error('Failed to create project')
         } finally {
             setLoading(false)
         }

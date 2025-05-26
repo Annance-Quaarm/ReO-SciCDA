@@ -113,25 +113,25 @@ const IPFSIntegration = () => {
         }
     }
 
-    // if (userState?.status === 'executing' || isLoading) {
-    //     return (
-    //         <div className="flex items-center justify-center p-8">
-    //             <Loader2 className="h-8 w-8 animate-spin" />
-    //         </div>
-    //     )
-    // }
-
     if (!userState) {
         return (
-            <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Authentication Required</AlertTitle>
-                <AlertDescription>
-                    Please sign in to configure your IPFS integration.
-                </AlertDescription>
-            </Alert>
+            <div className="flex items-center justify-center p-8">
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
         )
     }
+
+    // if (!userState) {
+    //     return (
+    //         <Alert variant="destructive">
+    //             <AlertCircle className="h-4 w-4" />
+    //             <AlertTitle>Authentication Required</AlertTitle>
+    //             <AlertDescription>
+    //                 Please sign in to configure your IPFS integration.
+    //             </AlertDescription>
+    //         </Alert>
+    //     )
+    // }
 
     return (
         <div className="space-y-6">

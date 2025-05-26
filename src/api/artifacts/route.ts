@@ -1,4 +1,3 @@
-import { pinata } from "@/lib/pinata/config";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
